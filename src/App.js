@@ -5,6 +5,7 @@ import {
   FormControl,
   Select
 } from "@material-ui/core";
+import InfoBox from './InfoBox';
 
 function App() {
   // State = how to write a variable in react
@@ -39,6 +40,8 @@ function App() {
   // ROOT COMPONENT
   return (
     <div className="app">
+      {/* Header */}
+      {/* Title + Select input dropdown field */}
       <div className="app__header">
         <h1>COVID-19 Tracker</h1>
         <FormControl className="app__dropdown">
@@ -52,15 +55,15 @@ function App() {
         </FormControl>
       </div>
       
+      {/* Statistics */}
+      <div className="app__stats">
+        <InfoBox title="Coronavirus Cases" cases={123} total={2000} />
+        <InfoBox title="Recovered" cases={1234} total={3000} />
+        <InfoBox title="Deaths" cases={12345} total={4000} />        
+      </div>
+      
 
-
-      {/* PROJECT STRUCTURE */}
-      {/* Header */}
-      {/* Title + Select input dropdown field */}
-
-      {/* InfoBoxs */}
-      {/* InfoBoxs */}
-      {/* InfoBoxs */}
+      
 
       {/* Table */}
       {/* Graph */}

@@ -1,4 +1,5 @@
 import './App.css';
+import { useState } from "react";
 import {
   MenuItem,
   FormControl,
@@ -6,6 +7,11 @@ import {
 } from "@material-ui/core";
 
 function App() {
+  // State = how to write a variable in react
+  const [countries, setCountries] = useState([
+    'USA', 'UK', 'INDIA'
+  ]);
+
   return (
     <div className="app">
       <div className="app__header">
@@ -13,6 +19,13 @@ function App() {
         <FormControl className="app__dropdown">
           <Select variant="outlined" value="abc">
             {/* Loop through all the countries and show dropdown list of the options */}
+            {
+              countries.map((country) => (
+                <MenuItem value={country}>{country}</MenuItem>
+              ))
+            }
+
+
             {/* <MenuItem value="worldwide">Worldwide</MenuItem>
             <MenuItem value="worldwide">Option 2</MenuItem>
             <MenuItem value="worldwide">Option 3</MenuItem>

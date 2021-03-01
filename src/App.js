@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MenuItem,
   FormControl,
@@ -8,10 +8,30 @@ import {
 
 function App() {
   // State = how to write a variable in react
-  const [countries, setCountries] = useState([
-    'USA', 'UK', 'INDIA'
-  ]);
+  const [countries, setCountries] = useState([]);
 
+  // USEEFFECT = runs a piece of code based on a given condition
+  useEffect(() => {
+    // async -> send a request, wait for it, do something
+    const getCountriesData = async () => {
+      await fetch("https://disease.sh/v3/covid-19/countries")
+      .then((response) => response.json())
+      .then((data) => {
+        const countries = data.map((country) => (
+          {
+            name: country.country, // United Kingdom, United States, France
+            value: country.countryInfo.iso2 // UK, USA, FR
+          }));
+          setCountries(countries);
+      });
+    };
+
+    getCountriesData();
+  }, []); // code would also run when countries changes (e.g., [countries])
+
+
+
+  // ROOT COMPONENT
   return (
     <div className="app">
       <div className="app__header">
@@ -19,17 +39,10 @@ function App() {
         <FormControl className="app__dropdown">
           <Select variant="outlined" value="abc">
             {/* Loop through all the countries and show dropdown list of the options */}
-            {
-              countries.map((country) => (
-                <MenuItem value={country}>{country}</MenuItem>
-              ))
-            }
-
-
-            {/* <MenuItem value="worldwide">Worldwide</MenuItem>
-            <MenuItem value="worldwide">Option 2</MenuItem>
-            <MenuItem value="worldwide">Option 3</MenuItem>
-            <MenuItem value="worldwide">YOOOOOOOOO</MenuItem> */}
+            <MenuItem value="worldwide">Worldwide</MenuItem>
+            {countries.map((country) => (
+                <MenuItem value={country.value}>{country.name}</MenuItem>
+              ))}
           </Select>
         </FormControl>
       </div>

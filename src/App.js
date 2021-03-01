@@ -6,6 +6,7 @@ import {
   Select
 } from "@material-ui/core";
 import InfoBox from './InfoBox';
+import Map from './Map';
 
 function App() {
   // State = how to write a variable in react
@@ -69,6 +70,7 @@ function App() {
       {/* Graph */}
 
       {/* Map */}
+      <Map />
     </div>    
   );
 }

@@ -9,6 +9,7 @@ import {
 function App() {
   // State = how to write a variable in react
   const [countries, setCountries] = useState([]);
+  const [country, setCountry] = useState('worldwide');
 
   // USEEFFECT = runs a piece of code based on a given condition
   useEffect(() => {
@@ -29,7 +30,11 @@ function App() {
     getCountriesData();
   }, []); // code would also run when countries changes (e.g., [countries])
 
-
+  const onCountryChange = (event) => {
+    const countryCode = event.target.value;
+    console.log(countryCode);
+    setCountry(countryCode);
+  }
 
   // ROOT COMPONENT
   return (
@@ -37,7 +42,7 @@ function App() {
       <div className="app__header">
         <h1>COVID-19 Tracker</h1>
         <FormControl className="app__dropdown">
-          <Select variant="outlined" value="abc">
+          <Select variant="outlined" onChange={onCountryChange} value={country}>
             {/* Loop through all the countries and show dropdown list of the options */}
             <MenuItem value="worldwide">Worldwide</MenuItem>
             {countries.map((country) => (

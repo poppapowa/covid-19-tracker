@@ -4,6 +4,7 @@ import { MenuItem, FormControl, Select, Card, CardContent } from "@material-ui/c
 import InfoBox from './InfoBox';
 import Map from './Map';
 import Table from './Table';
+import { sortData } from "./util";
 
 function App() {
   // State = how to write a variable in react
@@ -34,7 +35,8 @@ function App() {
             name: country.country, // United Kingdom, United States, France
             value: country.countryInfo.iso2 // UK, USA, FR
           }));
-          setTableData(data);
+          const sortedData = sortData(data);
+          setTableData(sortedData);
           setCountries(countries);
       });
     };

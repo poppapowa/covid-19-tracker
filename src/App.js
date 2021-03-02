@@ -8,8 +8,19 @@ function App() {
   // State = how to write a variable in react
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState('worldwide');
+  const [countryInfo, setCountryInfo] = useState({});
 
   // USEEFFECT = runs a piece of code based on a given condition
+  // get worldwide data on initial page load and populate stat cards
+  useEffect(() => {
+    fetch("https://disease.sh/v3/covid-19/all?yesterday=true")
+      .then((response) => response.json())
+      .then((data) => {
+        setCountryInfo(data);
+      });
+  }, []);
+
+  // get list of countries and populate dropdown menu
   useEffect(() => {
     // async -> send a request, wait for it, do something
     const getCountriesData = async () => {
@@ -28,12 +39,28 @@ function App() {
     getCountriesData();
   }, []); // code would also run when countries changes (e.g., [countries])
 
-  const onCountryChange = (event) => {
+  const onCountryChange = async (event) => {
+    // country code of currently selected country in dropdown
     const countryCode = event.target.value;
-    console.log(countryCode);
-    setCountry(countryCode);
-  }
 
+    // url for fetching data for current country
+    const url = 
+      countryCode === 'worldwide' 
+        ? "https://disease.sh/v3/covid-19/all?yesterday=true"
+        : `https://disease.sh/v3/covid-19/countries/${countryCode}?yesterday=true`;
+    
+    // get data for current country
+    await fetch(url)
+      .then((response) => response.json())
+      .then(data => {
+        // render country name on dropdown (visible when dropdown is not open) 
+        setCountry(countryCode);
+        // all of the data from the country response
+        setCountryInfo(data);
+        
+      });
+  };
+  console.log(">>>> COUNTRY INFO: ", countryInfo);
   // ROOT COMPONENT
   return (
     <div className="app">
@@ -55,9 +82,21 @@ function App() {
         
         {/* Statistics */}
         <div className="app__stats">
-          <InfoBox title="Coronavirus Cases" cases={123} total={2000} />
-          <InfoBox title="Recovered" cases={1234} total={3000} />
-          <InfoBox title="Deaths" cases={12345} total={4000} />        
+          <InfoBox 
+            title="Coronavirus Cases"
+            cases={countryInfo.todayCases} 
+            total={countryInfo.cases}
+          />
+          <InfoBox
+            title="Recovered"
+            cases={countryInfo.todayRecovered}
+            total={countryInfo.recovered}
+          />
+          <InfoBox 
+            title="Deaths" 
+            cases={countryInfo.todayDeaths}
+            total={countryInfo.deaths}
+          />        
         </div>
         
         {/* Map */}

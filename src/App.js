@@ -2,12 +2,12 @@ import './App.css';
 import { useState, useEffect } from "react";
 import { MenuItem, FormControl, Select, Card, CardContent } from "@material-ui/core";
 import InfoBox from './InfoBox';
+import "./InfoBox.css";
 import Map from './Map';
 import Table from './Table';
 import LineGraph from './LineGraph';
 import { sortData, prettyPrintStat } from "./util";
 import "leaflet/dist/leaflet.css";
-
 function App() {
   // State = how to write a variable in react
   const [countries, setCountries] = useState([]);
@@ -83,8 +83,7 @@ function App() {
   return (
     <div className="app">
       <div className="app__left">
-        {/* Header */}
-        {/* Title + Select input dropdown field */}
+        {/* Header (title + dropdown menu) */}
         <div className="app__header">
           <h1>COVID-19 Tracker</h1>
           <FormControl className="app__dropdown">
@@ -101,10 +100,10 @@ function App() {
         {/* Statistics */}
         <div className="app__stats">
           <InfoBox 
-            title="Coronavirus Cases"
+            title="COVID-19 Cases"
             cases={prettyPrintStat(countryInfo.todayCases)} 
             total={prettyPrintStat(countryInfo.cases)}
-            onClick={e => setCasesType("cases")}
+            onClick={(e) => setCasesType("cases")}
             active={casesType === "cases"}
             isRed
           />
@@ -112,14 +111,14 @@ function App() {
             title="Recovered"
             cases={prettyPrintStat(countryInfo.todayRecovered)}
             total={prettyPrintStat(countryInfo.recovered)}
-            onClick={e => setCasesType("recovered")}
+            onClick={(e) => setCasesType("recovered")}
             active={casesType === "recovered"}
           />
           <InfoBox 
             title="Deaths" 
             cases={prettyPrintStat(countryInfo.todayDeaths)}
             total={prettyPrintStat(countryInfo.deaths)}
-            onClick={e => setCasesType("deaths")}
+            onClick={(e) => setCasesType("deaths")}
             active={casesType === "deaths"}
             isRed
           />        
@@ -139,7 +138,7 @@ function App() {
           <h3>Live Cases by Country</h3>
           {/* Table */}
           <Table countries={tableData} />
-          <h3 className="app__graphTitle">Worldwide new {casesType}</h3>
+          <h3 className="app__graphTitle">Worldwide daily {casesType}</h3>
           {/* Graph */}
           <LineGraph className="app__graph" casesType={casesType}/>
         </CardContent>

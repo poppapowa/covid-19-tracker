@@ -11,9 +11,12 @@ function Map({ countries, casesType, center, zoom}) {
   }
   return (
     <div className="map">
-      <MapContainer 
+      <MapContainer
+        casesType={casesType}
+        className="map"
         center={center}
         zoom={zoom}
+        scrollWheelZoom={false}
       >
         <ChangeView center={center} zoom={zoom} />
         <TileLayer

@@ -1,5 +1,5 @@
 .map {
-  height: 500px;
+  height: 600px;
   background-color: white;
   padding: 1rem;
   border-radius: 20px;
@@ -24,7 +24,7 @@
   height: 80px;
   width: 100%;
   background-size: cover;
-  border-radius: 8px;
+  border-radius: 2px;
 }
 
 .info-confirmed,

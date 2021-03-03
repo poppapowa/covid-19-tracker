@@ -68,6 +68,11 @@ function App() {
         // all of the data from the country response
         setCountryInfo(data);
         
+        // adjust location and zoom on map depending on which country is selected
+        countryCode === "worldwide"
+          ? setMapCenter([34.80746, -40.4796])
+          : setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+        setMapZoom(4);
       });
   };
   console.log(">>>> COUNTRY INFO: ", countryInfo);

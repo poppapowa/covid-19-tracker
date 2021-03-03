@@ -17,6 +17,7 @@ function App() {
   const [mapCenter, setMapCenter] = useState({lat: 34.80746, lng: -40.4796});
   const [mapZoom, setMapZoom] = useState(3);
   const [mapCountries, setMapCountries] = useState([]);
+  const [casesType, setCasesType] = useState("cases");
 
 
   // USEEFFECT = runs a piece of code based on a given condition
@@ -103,22 +104,31 @@ function App() {
             title="Coronavirus Cases"
             cases={prettyPrintStat(countryInfo.todayCases)} 
             total={prettyPrintStat(countryInfo.cases)}
+            onClick={e => setCasesType("cases")}
+            active={casesType === "cases"}
+            isRed
           />
           <InfoBox
             title="Recovered"
             cases={prettyPrintStat(countryInfo.todayRecovered)}
             total={prettyPrintStat(countryInfo.recovered)}
+            onClick={e => setCasesType("recovered")}
+            active={casesType === "recovered"}
           />
           <InfoBox 
             title="Deaths" 
             cases={prettyPrintStat(countryInfo.todayDeaths)}
             total={prettyPrintStat(countryInfo.deaths)}
+            onClick={e => setCasesType("deaths")}
+            active={casesType === "deaths"}
+            isRed
           />        
         </div>
         
         {/* Map */}
         <Map
           countries={mapCountries}
+          casesType={casesType}
           center={mapCenter}
           zoom={mapZoom}
         />
@@ -129,9 +139,9 @@ function App() {
           <h3>Live Cases by Country</h3>
           {/* Table */}
           <Table countries={tableData} />
-          <h3>Worldwide new cases</h3>
+          <h3 className="app__graphTitle">Worldwide new {casesType}</h3>
           {/* Graph */}
-          <LineGraph/>
+          <LineGraph className="app__graph" casesType={casesType}/>
         </CardContent>
       </Card>
     </div>    

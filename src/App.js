@@ -2,12 +2,12 @@ import './App.css';
 import { useState, useEffect } from "react";
 import { MenuItem, FormControl, Select, Card, CardContent } from "@material-ui/core";
 import InfoBox from './InfoBox';
+import "./InfoBox.css";
 import Map from './Map';
 import Table from './Table';
 import LineGraph from './LineGraph';
-import { sortData } from "./util";
+import { sortData, prettyPrintStat } from "./util";
 import "leaflet/dist/leaflet.css";
-
 function App() {
   // State = how to write a variable in react
   const [countries, setCountries] = useState([]);
@@ -17,6 +17,8 @@ function App() {
   const [mapCenter, setMapCenter] = useState({lat: 34.80746, lng: -40.4796});
   const [mapZoom, setMapZoom] = useState(3);
   const [mapCountries, setMapCountries] = useState([]);
+  const [casesType, setCasesType] = useState("cases");
+  const [isLoading, setLoading] = useState(false);
 
 
   // USEEFFECT = runs a piece of code based on a given condition
@@ -52,6 +54,9 @@ function App() {
   }, []); // code would also run when countries changes (e.g., [countries])
 
   const onCountryChange = async (event) => {
+    // sets flag to wait until data is loaded
+    setLoading(true);
+
     // country code of currently selected country in dropdown
     const countryCode = event.target.value;
 
@@ -67,8 +72,12 @@ function App() {
       .then(data => {
         // render country name on dropdown (visible when dropdown is not open) 
         setCountry(countryCode);
+
         // all of the data from the country response
         setCountryInfo(data);
+        console.log(">>>> COUNTRY INFO: ", countryInfo);
+        // data is finished loading
+        setLoading(false)
         
         // adjust location and zoom on map depending on which country is selected
         countryCode === "worldwide"
@@ -77,13 +86,12 @@ function App() {
         setMapZoom(4);
       });
   };
-  console.log(">>>> COUNTRY INFO: ", countryInfo);
+  
   // ROOT COMPONENT
   return (
     <div className="app">
       <div className="app__left">
-        {/* Header */}
-        {/* Title + Select input dropdown field */}
+        {/* Header (title + dropdown menu) */}
         <div className="app__header">
           <h1>COVID-19 Tracker</h1>
           <FormControl className="app__dropdown">
@@ -100,25 +108,37 @@ function App() {
         {/* Statistics */}
         <div className="app__stats">
           <InfoBox 
-            title="Coronavirus Cases"
-            cases={countryInfo.todayCases} 
-            total={countryInfo.cases}
+            title="COVID-19 Cases"
+            cases={prettyPrintStat(countryInfo.todayCases)} 
+            total={prettyPrintStat(countryInfo.cases)}
+            onClick={(e) => setCasesType("cases")}
+            active={casesType === "cases"}
+            isRed
+            isloading={isLoading}
           />
           <InfoBox
             title="Recovered"
-            cases={countryInfo.todayRecovered}
-            total={countryInfo.recovered}
+            cases={prettyPrintStat(countryInfo.todayRecovered)}
+            total={prettyPrintStat(countryInfo.recovered)}
+            onClick={(e) => setCasesType("recovered")}
+            active={casesType === "recovered"}
+            isloading={isLoading}
           />
           <InfoBox 
             title="Deaths" 
-            cases={countryInfo.todayDeaths}
-            total={countryInfo.deaths}
+            cases={prettyPrintStat(countryInfo.todayDeaths)}
+            total={prettyPrintStat(countryInfo.deaths)}
+            onClick={(e) => setCasesType("deaths")}
+            active={casesType === "deaths"}
+            isRed
+            isloading={isLoading}
           />        
         </div>
         
         {/* Map */}
         <Map
           countries={mapCountries}
+          casesType={casesType}
           center={mapCenter}
           zoom={mapZoom}
         />
@@ -129,9 +149,9 @@ function App() {
           <h3>Live Cases by Country</h3>
           {/* Table */}
           <Table countries={tableData} />
-          <h3>Worldwide new cases</h3>
+          <h3 className="app__graphTitle">Worldwide daily {casesType}</h3>
           {/* Graph */}
-          <LineGraph/>
+          <LineGraph className="app__graph" casesType={casesType}/>
         </CardContent>
       </Card>
     </div>    

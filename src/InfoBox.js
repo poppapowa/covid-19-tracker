@@ -13,10 +13,14 @@ function InfoBox({ title, cases, total, active, isRed, ...props }) {
           {title}
         </Typography>
 
-        {/* +120K number of cases */}
-        <h2 className={`infoBox__cases ${!isRed && "infoBox__cases--green"}`}>{cases}</h2>
+        {/* Today's number of cases */}
+        <h2 
+          className={`infoBox__cases ${!isRed && "infoBox__cases--green"}`}
+        >
+          {props.isloading ? <i className="fa fa-cog fa-spin fa-fw" /> : cases}
+        </h2>
 
-        {/* 1.2M Total */}
+        {/* Total number of cases */}
         <Typography className="infoBox__total" color="textSecondary">
           {total} Total
         </Typography>

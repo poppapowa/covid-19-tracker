@@ -18,6 +18,7 @@ function App() {
   const [mapZoom, setMapZoom] = useState(3);
   const [mapCountries, setMapCountries] = useState([]);
   const [casesType, setCasesType] = useState("cases");
+  const [isLoading, setLoading] = useState(false);
 
 
   // USEEFFECT = runs a piece of code based on a given condition
@@ -53,6 +54,9 @@ function App() {
   }, []); // code would also run when countries changes (e.g., [countries])
 
   const onCountryChange = async (event) => {
+    // sets flag to wait until data is loaded
+    setLoading(true);
+
     // country code of currently selected country in dropdown
     const countryCode = event.target.value;
 
@@ -68,8 +72,12 @@ function App() {
       .then(data => {
         // render country name on dropdown (visible when dropdown is not open) 
         setCountry(countryCode);
+
         // all of the data from the country response
         setCountryInfo(data);
+        console.log(">>>> COUNTRY INFO: ", countryInfo);
+        // data is finished loading
+        setLoading(false)
         
         // adjust location and zoom on map depending on which country is selected
         countryCode === "worldwide"
@@ -78,7 +86,7 @@ function App() {
         setMapZoom(4);
       });
   };
-  console.log(">>>> COUNTRY INFO: ", countryInfo);
+  
   // ROOT COMPONENT
   return (
     <div className="app">
@@ -106,6 +114,7 @@ function App() {
             onClick={(e) => setCasesType("cases")}
             active={casesType === "cases"}
             isRed
+            isloading={isLoading}
           />
           <InfoBox
             title="Recovered"
@@ -113,6 +122,7 @@ function App() {
             total={prettyPrintStat(countryInfo.recovered)}
             onClick={(e) => setCasesType("recovered")}
             active={casesType === "recovered"}
+            isloading={isLoading}
           />
           <InfoBox 
             title="Deaths" 
@@ -121,6 +131,7 @@ function App() {
             onClick={(e) => setCasesType("deaths")}
             active={casesType === "deaths"}
             isRed
+            isloading={isLoading}
           />        
         </div>
         

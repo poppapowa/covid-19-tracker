@@ -51,7 +51,6 @@ const options = {
 const buildChartData = (data, casesType="cases") => {
   const chartData = [];
   let lastDataPoint;
-
   for (let date in data.cases) {
     if (lastDataPoint) {
       const newDataPoint = {
@@ -72,7 +71,7 @@ function LineGraph({ casesType = "cases", ...props }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=120")
+      await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=60")
         .then((response) => {
           return response.json();
         })

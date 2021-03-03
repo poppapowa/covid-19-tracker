@@ -6,6 +6,7 @@ import Map from './Map';
 import Table from './Table';
 import LineGraph from './LineGraph';
 import { sortData } from "./util";
+import "leaflet/dist/leaflet.css";
 
 function App() {
   // State = how to write a variable in react
@@ -13,6 +14,10 @@ function App() {
   const [country, setCountry] = useState('worldwide');
   const [countryInfo, setCountryInfo] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [mapCenter, setMapCenter] = useState({lat: 34.80746, lng: -40.4796});
+  const [mapZoom, setMapZoom] = useState(3);
+  const [mapCountries, setMapCountries] = useState([]);
+
 
   // USEEFFECT = runs a piece of code based on a given condition
   // get worldwide data on initial page load and populate stat cards
@@ -39,6 +44,7 @@ function App() {
           const sortedData = sortData(data);
           setTableData(sortedData);
           setCountries(countries);
+          setMapCountries(data);
       });
     };
 
@@ -64,6 +70,11 @@ function App() {
         // all of the data from the country response
         setCountryInfo(data);
         
+        // adjust location and zoom on map depending on which country is selected
+        countryCode === "worldwide"
+          ? setMapCenter([34.80746, -40.4796])
+          : setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+        setMapZoom(4);
       });
   };
   console.log(">>>> COUNTRY INFO: ", countryInfo);
@@ -106,7 +117,11 @@ function App() {
         </div>
         
         {/* Map */}
-        <Map />
+        <Map
+          countries={mapCountries}
+          center={mapCenter}
+          zoom={mapZoom}
+        />
       </div>
 
       <Card className="app__right">

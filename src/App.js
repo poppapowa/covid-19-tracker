@@ -16,6 +16,7 @@ function App() {
   const [tableData, setTableData] = useState([]);
   const [mapCenter, setMapCenter] = useState({lat: 34.80746, lng: -40.4796});
   const [mapZoom, setMapZoom] = useState(3);
+  const [mapCountries, setMapCountries] = useState([]);
 
 
   // USEEFFECT = runs a piece of code based on a given condition
@@ -43,6 +44,7 @@ function App() {
           const sortedData = sortData(data);
           setTableData(sortedData);
           setCountries(countries);
+          setMapCountries(data);
       });
     };
 
@@ -116,6 +118,7 @@ function App() {
         
         {/* Map */}
         <Map
+          countries={mapCountries}
           center={mapCenter}
           zoom={mapZoom}
         />

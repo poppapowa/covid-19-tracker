@@ -6,6 +6,7 @@ import Map from './Map';
 import Table from './Table';
 import LineGraph from './LineGraph';
 import { sortData } from "./util";
+import "leaflet/dist/leaflet.css";
 
 function App() {
   // State = how to write a variable in react
@@ -13,6 +14,9 @@ function App() {
   const [country, setCountry] = useState('worldwide');
   const [countryInfo, setCountryInfo] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [mapCenter, setMapCenter] = useState({lat: 34.80746, lng: -40.4796});
+  const [mapZoom, setMapZoom] = useState(3);
+
 
   // USEEFFECT = runs a piece of code based on a given condition
   // get worldwide data on initial page load and populate stat cards
@@ -106,7 +110,10 @@ function App() {
         </div>
         
         {/* Map */}
-        <Map />
+        <Map
+          center={mapCenter}
+          zoom={mapZoom}
+        />
       </div>
 
       <Card className="app__right">

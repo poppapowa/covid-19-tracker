@@ -13,6 +13,7 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState('worldwide');
   const [countryInfo, setCountryInfo] = useState({});
+  const [vaccineInfo, setVaccineInfo] = useState({});
   const [tableData, setTableData] = useState([]);
   const [mapCenter, setMapCenter] = useState({lat: 34.80746, lng: -40.4796});
   const [mapZoom, setMapZoom] = useState(3);
@@ -28,6 +29,28 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setCountryInfo(data);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch("https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=all")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("-- Data: ", data);
+        let vaccineTotals = [];
+        for (var key of Object.keys(data)) {
+          vaccineTotals.push(data[key]);
+          console.log("-- " + key + " -> " + data[key])
+          console.log(data[key])
+        }
+
+        let lastIdx = vaccineTotals.length - 1;
+        const vacInfo = {
+          today: vaccineTotals[lastIdx] - vaccineTotals[lastIdx - 2],
+          total: vaccineTotals[lastIdx]
+        }
+
+        setVaccineInfo(vacInfo);
       });
   }, []);
 
@@ -66,6 +89,36 @@ function App() {
         ? "https://disease.sh/v3/covid-19/all?yesterday=true"
         : `https://disease.sh/v3/covid-19/countries/${countryCode}?yesterday=true`;
     
+    const vacUrl =
+      countryCode === 'worldwide'
+        ? "https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=all"
+        : `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${countryCode}?lastdays=all`;
+    
+    await fetch(vacUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Data: ", data);
+        const timeline = data.timeline;
+        
+        let vaccineTotals = [];
+        for (var key of Object.keys(timeline)) {
+          vaccineTotals.push(timeline[key]);
+          console.log(key + " -> " + timeline[key])
+          console.log(timeline[key])
+        }
+
+        let lastIdx = vaccineTotals.length - 1;
+        const vacInfo = {
+          today: vaccineTotals[lastIdx] - vaccineTotals[lastIdx - 2],
+          total: vaccineTotals[lastIdx]
+        }
+        
+        setVaccineInfo(vacInfo);
+        console.log(">>>> VACCINE INFO: ", vaccineInfo);
+      });
+
+    console.log("Vac url: ", vacUrl);
+
     // get data for current country
     await fetch(url)
       .then((response) => response.json())
@@ -107,6 +160,9 @@ function App() {
         
         {/* Statistics */}
         <div className="app__stats">
+          {console.log("++++ COUNTRY INFO: ", countryInfo)}
+          {console.log("++++ VACCINE INFO: ", vaccineInfo)}
+
           <InfoBox 
             title="COVID-19 Cases"
             cases={prettyPrintStat(countryInfo.todayCases)} 
@@ -131,6 +187,14 @@ function App() {
             onClick={(e) => setCasesType("deaths")}
             active={casesType === "deaths"}
             isRed
+            isloading={isLoading}
+          />
+          <InfoBox 
+            title="Vaccinations"
+            cases={prettyPrintStat(vaccineInfo.today)}
+            total={prettyPrintStat(vaccineInfo.total)}
+            onClick={(e) => setCasesType("vaccinations")}
+            active={casesType === "vaccinations"}
             isloading={isLoading}
           />        
         </div>

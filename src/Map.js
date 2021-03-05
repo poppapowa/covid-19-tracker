@@ -1,14 +1,15 @@
 import React from 'react';
 import "./Map.css";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import { renderDataOnMap } from "./util";
+import { renderDataOnMap, combineMapData } from "./util";
 
-function Map({ countries, casesType, center, zoom}) {
+function Map({ countries, vaccines, casesType, center, zoom}) {
   function ChangeView({ center, zoom }) {
     const map = useMap();
     map.setView(center, zoom);
     return null;
   }
+  const mapData = combineMapData(countries, vaccines, casesType);
   return (
     <div className="map">
       <MapContainer
@@ -24,7 +25,8 @@ function Map({ countries, casesType, center, zoom}) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {/* Loop through countries and draw circles on screen */}
-        {renderDataOnMap(countries, casesType)}
+        {/* {renderDataOnMap(countries, casesType)} */}
+        {renderDataOnMap(mapData)}
       </MapContainer>
     </div>
   );

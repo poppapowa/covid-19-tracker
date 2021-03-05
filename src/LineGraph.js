@@ -48,45 +48,71 @@ const options = {
   },
 }
 
+// generates line graph data
 const buildChartData = (data, casesType="cases") => {
-  const chartData = [];
-  let lastDataPoint;
-  for (let date in data.cases) {
-    if (lastDataPoint) {
-      const newDataPoint = {
-        x: date,
-        y: data[casesType][date] - lastDataPoint
+  // if-else needed because of different data formats
+  if (casesType === "vaccinations") {
+    const chartData = [];
+    let lastDataPoint;
+    for (let date in data) {
+      if (lastDataPoint) {
+        const newDataPoint = {
+          x: date,
+          y: data[date] - lastDataPoint
+        }
+        chartData.push(newDataPoint);
       }
-      chartData.push(newDataPoint);
+      lastDataPoint = data[date];
     }
-    lastDataPoint = data[casesType][date];
+    return chartData;
+  } else {
+    const chartData = [];
+    let lastDataPoint;
+    for (let date in data.cases) {
+      if (lastDataPoint) {
+        const newDataPoint = {
+          x: date,
+          y: data[casesType][date] - lastDataPoint
+        }
+        chartData.push(newDataPoint);
+      }
+      lastDataPoint = data[casesType][date];
+    }
+    return chartData;
   }
-  return chartData;
 };
 
-
-
+// LineGraph component
 function LineGraph({ casesType = "cases", ...props }) {
   const [data, setData] = useState({});
 
+  // get appropriate data depending on which info box is selected
   useEffect(() => {
-    const fetchData = async () => {
-      await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=60")
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Data: ", data);
-          const chartData = buildChartData(data, casesType);
-          console.log("Chart Data: ", chartData);
-          setData(chartData);
-        });
+    if (casesType === "vaccinations") {
+      const fetchData = async () => {
+        await fetch("https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=60")
+          .then((response) => response.json())
+          .then((data) => {
+            const chartData = buildChartData(data, casesType);
+            setData(chartData);
+          });
+      }
+      fetchData();      
+    } else {
+      const fetchData = async () => {
+        await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=60")
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            const chartData = buildChartData(data, casesType);
+            setData(chartData);
+          });
+      }
+      fetchData();
     }
-    fetchData();
   }, [casesType]);
 
-
-  
   return (
     <div className={props.className}>
       {data?.length > 0 && (

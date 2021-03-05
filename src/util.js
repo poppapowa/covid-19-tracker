@@ -23,6 +23,11 @@ const casesTypeColors = {
     // half_op: "rgba(251,68,67,0.5)",
     mulitiplier: 2000,
   },
+
+  vaccinations: {
+    hex: "#9809eb",
+    mulitiplier: 400
+  }
 };
 
 export const sortData = (data) => {
@@ -40,28 +45,81 @@ export const sortData = (data) => {
   // return sortedData;
 }
 
-// Render circles on map with interactive tooltips
-export const renderDataOnMap = (data, casesType="cases") =>
-  data.map(country => (
-    <Circle
-      center={[country.countryInfo.lat, country.countryInfo.long]}
-      fillOpacity={0.4}
-      pathOptions={{
+// Combines both sources of data into clean format for map rendering
+export const combineMapData = (allCountries, vacCountries, casesType="cases") => {
+  var vacMap = new Map();
+  // iterate through countries that track vaccinations and generate their data
+  for (var i = 0; i < vacCountries.length; i++) {
+    // get today's number and total number of vaccinations for current country
+    let vaccineTotals = [];
+    var data = vacCountries[i].timeline; // time series data
+    for (var key of Object.keys(data)) {
+      vaccineTotals.push(data[key]);
+    }
+    let lastIdx = vaccineTotals.length - 1;
+    const vacInfo = {
+      today: vaccineTotals[lastIdx] - vaccineTotals[lastIdx - 2],
+      total: vaccineTotals[lastIdx]
+    }
+
+    // add vaccinated country to map
+    vacMap.set(vacCountries[i].country, vacInfo);
+  }
+
+  // set default values for countries that don't track vaccinations
+  for (i = 0; i < allCountries.length; i++) {
+    if(!vacMap.has(allCountries[i].country)) {
+      vacMap.set(allCountries[i].country, {today: 0, total: 0});
+    }
+  }
+
+  // generate and return clean map data
+  var result = [];
+  for (i = 0; i < allCountries.length; i++) {
+    var currCountry = allCountries[i].country;
+    var currRadius = 0;
+    if(casesType === "vaccinations") {
+      currRadius = Math.sqrt(vacMap.get(currCountry).total / 10) * casesTypeColors["vaccinations"].mulitiplier;
+    } else {
+      currRadius = Math.sqrt(allCountries[i][casesType] / 10) * casesTypeColors[casesType].mulitiplier;
+    }
+
+    var currData = {
+      center: [allCountries[i].countryInfo.lat, allCountries[i].countryInfo.long],
+      fillOpacity: 0.4,
+      pathOptions: {
         color: casesTypeColors[casesType].hex,
         fillColor: casesTypeColors[casesType].hex,
-      }}     
-      radius={
-        Math.sqrt(country[casesType] / 10) *
-        casesTypeColors[casesType].mulitiplier
-      }
+      },
+      radius: currRadius,
+      flagUrl: allCountries[i].countryInfo.flag,
+      countryName: allCountries[i].country,
+      cases: allCountries[i].cases,
+      recovered: allCountries[i].recovered,
+      deaths: allCountries[i].deaths,
+      vaccinations: vacMap.get(currCountry).total
+    }
+    result.push(currData);
+  }
+  return result;
+}
+
+// Render circles on map with interactive tooltips
+export const renderDataOnMap = (data) =>
+  data.map(country => (
+    <Circle
+      center={country.center}
+      fillOpacity={country.fillOpacity}
+      pathOptions={country.pathOptions}     
+      radius={country.radius}
     >
       <Popup>
       <div className="info-container">
           <div
             className="info-flag"
-            style={{ backgroundImage: `url(${country.countryInfo.flag})` }}
+            style={{ backgroundImage: `url(${country.flagUrl})` }}
           />
-          <div className="info-name">{country.country}</div>
+          <div className="info-name">{country.countryName}</div>
           <div className="info-confirmed">
             Cases: {numeral(country.cases).format("0,0")}
           </div>
@@ -70,6 +128,9 @@ export const renderDataOnMap = (data, casesType="cases") =>
           </div>
           <div className="info-deaths">
             Deaths: {numeral(country.deaths).format("0,0")}
+          </div>
+          <div className="info-vaccinations">
+            Vaccinations: {numeral(country.vaccinations).format("0,0")}
           </div>
         </div>
       </Popup>

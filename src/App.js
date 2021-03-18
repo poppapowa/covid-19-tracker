@@ -187,6 +187,7 @@ function App() {
             total={prettyPrintStat(countryInfo.recovered)}
             onClick={(e) => setCasesType("recovered")}
             active={casesType === "recovered"}
+            isGreen
             isloading={isLoading}
           />
           <InfoBox 
@@ -195,7 +196,7 @@ function App() {
             total={prettyPrintStat(countryInfo.deaths)}
             onClick={(e) => setCasesType("deaths")}
             active={casesType === "deaths"}
-            isRed
+            isGrey
             isloading={isLoading}
           />
           <InfoBox 
@@ -204,6 +205,7 @@ function App() {
             total={prettyPrintStat(vaccineInfo.total)}
             onClick={(e) => setCasesType("vaccinations")}
             active={casesType === "vaccinations"}
+            isPurple
             isloading={isLoading}
           />        
         </div>

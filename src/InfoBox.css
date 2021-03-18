@@ -31,6 +31,30 @@
   border-color: red;
 }
 
+.infoBox__cases--red {
+  color: red;
+}
+
+.infoBox--green {
+  border-color: lightgreen;
+}
+
 .infoBox__cases--green {
   color: lightgreen;
+}
+
+.infoBox--grey {
+  border-color: grey;
+}
+
+.infoBox__cases--grey {
+  color: grey;
+}
+
+.infoBox--purple {
+  border-color: purple;
+}
+
+.infoBox__cases--purple {
+  color: purple;
 }

@@ -18,12 +18,13 @@ function App() {
   const [mapCenter, setMapCenter] = useState({lat: 34.80746, lng: -40.4796});
   const [mapZoom, setMapZoom] = useState(3);
   const [mapCountries, setMapCountries] = useState([]);
+  const [mapVaccines, setMapVaccines] = useState([]);
   const [casesType, setCasesType] = useState("cases");
   const [isLoading, setLoading] = useState(false);
 
 
   // USEEFFECT = runs a piece of code based on a given condition
-  // get worldwide data on initial page load and populate stat cards
+  // get worldwide cases, recovered, and deaths data on initial page load for info boxes
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all?yesterday=true")
       .then((response) => response.json())
@@ -32,16 +33,14 @@ function App() {
       });
   }, []);
 
+  // get worldwide vaccine data on initial page load for info boxes
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=all")
       .then((response) => response.json())
       .then((data) => {
-        console.log("-- Data: ", data);
         let vaccineTotals = [];
         for (var key of Object.keys(data)) {
           vaccineTotals.push(data[key]);
-          console.log("-- " + key + " -> " + data[key])
-          console.log(data[key])
         }
 
         let lastIdx = vaccineTotals.length - 1;
@@ -49,12 +48,12 @@ function App() {
           today: vaccineTotals[lastIdx] - vaccineTotals[lastIdx - 2],
           total: vaccineTotals[lastIdx]
         }
-
         setVaccineInfo(vacInfo);
       });
   }, []);
 
-  // get list of countries and populate dropdown menu
+  // get data for populating dropdown menu and table.
+  // also gets non-vaccine Map data
   useEffect(() => {
     // async -> send a request, wait for it, do something
     const getCountriesData = async () => {
@@ -76,6 +75,19 @@ function App() {
     getCountriesData();
   }, []); // code would also run when countries changes (e.g., [countries])
 
+  // gets vaccine Map data
+  useEffect(() => {
+    const getVaccineData = async () => {
+      await fetch("https://disease.sh/v3/covid-19/vaccine/coverage/countries?lastdays=all")
+        .then((response) => response.json())
+        .then((data) => {
+          setMapVaccines(data);
+        });
+    };
+    getVaccineData();
+  }, []);
+
+  // triggers when user selects a new country in dropdown menu
   const onCountryChange = async (event) => {
     // sets flag to wait until data is loaded
     setLoading(true);
@@ -89,22 +101,25 @@ function App() {
         ? "https://disease.sh/v3/covid-19/all?yesterday=true"
         : `https://disease.sh/v3/covid-19/countries/${countryCode}?yesterday=true`;
     
+    // getting vaccination data to display in info boxes
     const vacUrl =
       countryCode === 'worldwide'
         ? "https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=all"
         : `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${countryCode}?lastdays=all`;
-    
+
+    // updating vaccineInfo for info boxes when country is changed
     await fetch(vacUrl)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Data: ", data);
-        const timeline = data.timeline;
+        let timeline = data;
         
+        if (countryCode !== "worldwide") {
+          timeline = data.timeline;
+        }
+
         let vaccineTotals = [];
         for (var key of Object.keys(timeline)) {
           vaccineTotals.push(timeline[key]);
-          console.log(key + " -> " + timeline[key])
-          console.log(timeline[key])
         }
 
         let lastIdx = vaccineTotals.length - 1;
@@ -114,10 +129,7 @@ function App() {
         }
         
         setVaccineInfo(vacInfo);
-        console.log(">>>> VACCINE INFO: ", vaccineInfo);
       });
-
-    console.log("Vac url: ", vacUrl);
 
     // get data for current country
     await fetch(url)
@@ -128,7 +140,7 @@ function App() {
 
         // all of the data from the country response
         setCountryInfo(data);
-        console.log(">>>> COUNTRY INFO: ", countryInfo);
+
         // data is finished loading
         setLoading(false)
         
@@ -160,9 +172,6 @@ function App() {
         
         {/* Statistics */}
         <div className="app__stats">
-          {console.log("++++ COUNTRY INFO: ", countryInfo)}
-          {console.log("++++ VACCINE INFO: ", vaccineInfo)}
-
           <InfoBox 
             title="COVID-19 Cases"
             cases={prettyPrintStat(countryInfo.todayCases)} 
@@ -202,6 +211,7 @@ function App() {
         {/* Map */}
         <Map
           countries={mapCountries}
+          vaccines={mapVaccines}
           casesType={casesType}
           center={mapCenter}
           zoom={mapZoom}

@@ -12,26 +12,28 @@ function InfoBox({ title, cases, total, active, isRed, isGreen, isGrey, isPurple
         ${isPurple && "infoBox--purple"}`}
     >
       <CardContent>
-        {/* Title */}
-        <Typography className="infoBox__title" color="textSecondary">
-          {title}
-        </Typography>
+        <div>
+          {/* Title */}
+          <Typography className="infoBox__title" color="textSecondary">
+            {title}
+          </Typography>
 
-        {/* Today's number of cases */}
-        <h2 
-          className={`infoBox__cases 
-            ${isRed && "infoBox__cases--red"}
-            ${isGreen && "infoBox__cases--green"}
-            ${isGrey && "infoBox__cases--grey"}
-            ${isPurple && "infoBox__cases--purple"}`}
-        >
-          {props.isloading ? <i className="fa fa-cog fa-spin fa-fw" /> : cases}
-        </h2>
+          {/* Today's number of cases */}
+          <h2 
+            className={`infoBox__cases 
+              ${isRed && "infoBox__cases--red"}
+              ${isGreen && "infoBox__cases--green"}
+              ${isGrey && "infoBox__cases--grey"}
+              ${isPurple && "infoBox__cases--purple"}`}
+          >
+            {props.isloading ? <i className="fa fa-cog fa-spin fa-fw" /> : cases}
+          </h2>
 
-        {/* Total number of cases */}
-        <Typography className="infoBox__total" color="textSecondary">
-          {total} Total
-        </Typography>
+          {/* Total number of cases */}
+          <Typography className="infoBox__total" color="textSecondary">
+            {total} Total
+          </Typography>
+        </div>        
       </CardContent>
     </Card>
   )

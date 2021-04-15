@@ -85,9 +85,26 @@ const buildChartData = (data, casesType="cases") => {
 // LineGraph component
 function LineGraph({ casesType = "cases", ...props }) {
   const [data, setData] = useState({});
-
+  const [borderColor, setBorderColor] = useState("#CC1034");
+  const [backgroundColor, setBackgroundColor] = useState("rgba(204, 16, 52, 0.5)");
   // get appropriate data depending on which info box is selected
   useEffect(() => {
+    // set appropriate color
+    if (casesType === "cases") {
+      setBorderColor("#CC1034");
+      setBackgroundColor("rgba(204, 16, 52, 0.5)");
+    } else if (casesType === "recovered") {
+      setBorderColor("#7DD71D");
+      setBackgroundColor("rgba(125,215,29,0.5)");
+    } else if (casesType === "deaths") {
+      setBorderColor("#C0C0C0");
+      setBackgroundColor("rgba(192, 192, 192, 0.5)");
+    } else if (casesType === "vaccinations") {
+      setBorderColor("#9809eb");
+      setBackgroundColor("rgba(152, 9, 235, 0.5)");
+    }
+    
+    // set appropriate data
     if (casesType === "vaccinations") {
       const fetchData = async () => {
         await fetch("https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=60")
@@ -120,8 +137,8 @@ function LineGraph({ casesType = "cases", ...props }) {
           options = {options}
           data={{
             datasets: [{
-              backgroundColor: "rgba(204, 16, 52, 0.5)",
-              borderColor: "#CC1034",
+              backgroundColor: backgroundColor,
+              borderColor: borderColor,
               data: data,
             }]
           }}

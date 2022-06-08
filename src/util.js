@@ -7,26 +7,26 @@ const casesTypeColors = {
     hex: "#CC1034",
     // rgb: "rgb(204,16,52)",
     // half_op: "rgba(204,16,52,0.5)",
-    mulitiplier: 800,
+    mulitiplier: 200,
   },
 
   recovered: {
     hex: "#7DD71D",
     // rgb: "rgb(125,215,29)",
     // half_op: "rgba(125,215,29,0.5)",
-    mulitiplier: 1200,
+    mulitiplier: 200,
   },
 
   deaths: {
     hex: "#C0C0C0",
     // rgb: "rgb(251,68,67)",
     // half_op: "rgba(251,68,67,0.5)",
-    mulitiplier: 2000,
+    mulitiplier: 400,
   },
 
   vaccinations: {
     hex: "#9809eb",
-    mulitiplier: 400
+    mulitiplier: 100
   }
 };
 
